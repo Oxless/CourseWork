@@ -44,6 +44,11 @@ int main() {
     cout << "0. Выход." << endl;
     cout << "Выберите функцию по номеру: ";
     cin >> cmd;
+    if(cin.fail()) {
+        cin.clear();
+        cin.ignore(32767, '\n');
+        goto Choice;
+    }
     switch(cmd) {
         case 1:
             ShowElements(firstElement);
@@ -139,23 +144,32 @@ void ShowElements(Car* first) {
 }
 
 void AddElement() {
+    Input:
     Car* temp = new Car;
-    cout << "Введите марку: ";
-    cin >> temp->name;
-    cout << "Введите модель: ";
-    cin >> temp->model;
-    cout << "Введите страну производитель: ";
-    cin >> temp->country;
-    cout << "Введите год выпуска: ";
-    cin >> temp->year;
-    cout << "Введите объем двигателя: ";
-    cin >> temp->engine;
-    cout << "Введите расход топлива: ";
-    cin >> temp->mileage;
-    cout << "Введите стоимость: ";
-    cin >> temp->price;
-    cout << "Введите количество: ";
-    cin >> temp->amount;
+    cin.exceptions(cin.failbit | cin.badbit);
+    try {
+        cout << "Введите марку: ";
+        cin >> temp->name;
+        cout << "Введите модель: ";
+        cin >> temp->model;
+        cout << "Введите страну производитель: ";
+        cin >> temp->country;
+        cout << "Введите год выпуска: ";
+        cin >> temp->year;
+        cout << "Введите объем двигателя: ";
+        cin >> temp->engine;
+        cout << "Введите расход топлива: ";
+        cin >> temp->mileage;
+        cout << "Введите стоимость: ";
+        cin >> temp->price;
+        cout << "Введите количество: ";
+        cin >> temp->amount;
+    } catch(ios_base::failure e) {
+        cin.clear();
+        cin.ignore(32767, '\n');
+        cout << "Одна из характеристик введена некорректно. Попробуйте снова." << endl;
+        goto Input;
+    }
     temp->next = nullptr;
     if(!firstElement) {
         firstElement = temp;
@@ -220,8 +234,15 @@ Car* FindByYear() {
     Car* firstSublist = nullptr;
     Car* lastSublist;
     int year;
+    Input:
     cout << "Введите год выпуска автомобиля: ";
     cin >> year;
+    if(cin.fail()) {
+        cin.clear();
+        cin.ignore(32767, '\n');
+        cout << "Вы ввели некорректное значение года выпуска." << endl;
+        goto Input;
+    }
     while(first) {
         if(first->year == year) {
             if(!firstSublist) {
@@ -237,7 +258,6 @@ Car* FindByYear() {
 }
 
 void PriceByYear() {
-    bool has = false;
     Car* first = FindByYear();
     if(!first) {
         cout << "Нет автомобилей этого года выпуска." << endl;
