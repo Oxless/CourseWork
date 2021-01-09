@@ -5,8 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
-#include <sstream>
 #include <windows.h>
 using namespace std;
 
@@ -17,8 +15,8 @@ struct Car {
     Car* next;
 };
 
-void ReadCSV();
-void WriteCSV();
+void ReadFile();
+void WriteFile();
 void ShowElements(Car* first);
 void AddElement();
 void ClearElements();
@@ -34,7 +32,7 @@ int main() {
     setlocale(LC_ALL, "Russian");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    ReadCSV();
+    ReadFile();
     int cmd;
     Choice:
     cout << "Меню:" << endl;
@@ -73,7 +71,7 @@ int main() {
             PriceByYear();
             goto Choice;
         case 7:
-            WriteCSV();
+            WriteFile();
             goto Choice;
         default:
             ClearElements();
@@ -81,25 +79,18 @@ int main() {
     }
 }
 
-void ReadCSV() {
-    ifstream inData("D:/cpp/car-shop.csv");
-    string data;
-    while(getline(inData, data)) {
-        stringstream str(data);
-        string split;
-        vector<string> carData;
-        while(getline(str, split, ';')) {
-            carData.push_back(split);
-        }
+void ReadFile() {
+    ifstream inData("D:/cpp/car-shop.txt");
+    while(!inData.eof()) {
         Car* temp = new Car;
-        temp->name = carData.at(0);
-        temp->model = carData.at(1);
-        temp->country = carData.at(2);
-        temp->year = stoi(carData.at(3));
-        temp->engine = stod(carData.at(4));
-        temp->mileage = stoi(carData.at(5));
-        temp->price = stoi(carData.at(6));
-        temp->amount = stoi(carData.at(7));
+        inData >> temp->name;
+        inData >> temp->model;
+        inData >> temp->country;
+        inData >> temp->year;
+        inData >> temp->engine;
+        inData >> temp->mileage;
+        inData >> temp->price;
+        inData >> temp->amount;
         temp->next = nullptr;
         if(!firstElement) {
             firstElement = temp;
@@ -111,13 +102,13 @@ void ReadCSV() {
     inData.close();
 }
 
-void WriteCSV() {
-    ofstream outData("D:/cpp/car-shop.csv");
+void WriteFile() {
+    ofstream outData("D:/cpp/car-shop.txt");
     Car* first = firstElement;
     while(first) {
-        outData << first->name << ";" << first->model << ";" << first->country << ";";
-        outData << first->year << ";" << first->engine << ";" << first->mileage << ";";
-        outData << first->price << ";" << first->amount << endl;
+        outData << first->name << "\n" << first->model << "\n" << first->country << "\n";
+        outData << first->year << "\n" << first->engine << "\n" << first->mileage << "\n";
+        outData << first->price << "\n" << first->amount << endl;
         first = first->next;
     }
     outData.close();
@@ -145,6 +136,7 @@ void ShowElements(Car* first) {
     cout << "Введите любой символ, чтобы продолжить..." << endl;
     char next;
     cin >> next;
+    cin.ignore(32767, '\n');
 }
 
 void AddElement() {
